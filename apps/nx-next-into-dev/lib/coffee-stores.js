@@ -1,13 +1,12 @@
 import { createApi } from 'unsplash-js';
 
 const unsplash = createApi({
-    accessKey: process.env.UNSPLASH_ACCESS_KEY,
+    accessKey: process.env.NEXT_PUBLIC_UNSPLASH_ACCESS_KEY,
 });
 
 const getListOfCoffeeStorePhoto = async () => {
     const photos = await unsplash.search.getPhotos({
         query: 'coffee shop',
-        page: 1,
         perPage: 30,
     });
     const unsplashResults = photos.response.results;
@@ -17,18 +16,21 @@ const getListOfCoffeeStorePhoto = async () => {
     });
 };
 
-export const fetchCoffeeStores = async () => {
+export const fetchCoffeeStores = async (
+    latLong = '43.653833032607096%2C-79.37896808855945',
+    limit = 6
+) => {
     const photos = await getListOfCoffeeStorePhoto();
     const options = {
         method: 'GET',
         headers: {
             accept: 'application/json',
-            Authorization: process.env.FQS_API_KEY,
+            Authorization: process.env.NEXT_PUBLIC_FQS_API_KEY,
         },
     };
 
     const response = await fetch(
-        'https://api.foursquare.com/v3/places/search?query=coffee&ll=43.653833032607096%2C-79.37896808855945&limit=6',
+        `https://api.foursquare.com/v3/places/search?query=coffee&ll=${latLong}&limit=${limit}`,
         options
     );
     const data = await response.json();

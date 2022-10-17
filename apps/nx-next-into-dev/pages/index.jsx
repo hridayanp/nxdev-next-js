@@ -5,6 +5,7 @@ import Card from '../../../libs/coffee-store-shared-components/Card';
 import styles from '../styles/Home.module.css';
 import { fetchCoffeeStores } from '../lib/coffee-stores';
 import useTrackLocation from '../hooks/useTrackLocation';
+import { useEffect } from 'react';
 
 export async function getStaticProps() {
   const coffeeStores = await fetchCoffeeStores();
@@ -20,9 +21,25 @@ export default function Home({ coffeeStores }) {
   const { handleTrackLocation, latLong, locationErrorMsg, isFindingLocation } =
     useTrackLocation();
 
+  const fetchCoffeeStoresFromLatLong = async () => {
+    if (latLong) {
+      try {
+        const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 30);
+        console.log({ fetchedCoffeeStores });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchCoffeeStoresFromLatLong();
+  }, [latLong]);
+
   const handleOnBannerBtnClick = () => {
     console.log('Banner button clicked!');
     handleTrackLocation();
+    // fetchCoffeeStoresFromLatLong();
   };
 
   console.log({
