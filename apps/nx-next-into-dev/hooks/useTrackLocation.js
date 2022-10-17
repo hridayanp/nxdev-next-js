@@ -15,8 +15,8 @@ const useTrackLocation = () => {
     };
 
     const error = () => {
-        setIsFindingLocation(false);
         setLocationErrorMsg("Unable to retrieve your location");
+        setIsFindingLocation(false);
     };
 
     const handleTrackLocation = () => {
@@ -27,7 +27,6 @@ const useTrackLocation = () => {
         } else {
             // status.textContent = "Locating…";
             navigator.geolocation.getCurrentPosition(success, error);
-            setIsFindingLocation(false);
         }
     };
 

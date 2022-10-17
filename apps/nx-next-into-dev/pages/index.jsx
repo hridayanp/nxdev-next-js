@@ -5,7 +5,7 @@ import Card from '../../../libs/coffee-store-shared-components/Card';
 import styles from '../styles/Home.module.css';
 import { fetchCoffeeStores } from '../lib/coffee-stores';
 import useTrackLocation from '../hooks/useTrackLocation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 export async function getStaticProps() {
   const coffeeStores = await fetchCoffeeStores();
@@ -21,13 +21,21 @@ export default function Home({ coffeeStores }) {
   const { handleTrackLocation, latLong, locationErrorMsg, isFindingLocation } =
     useTrackLocation();
 
+  console.log({ isFindingLocation });
+
+  const [fetchedCoffeeStoresState, setFetchedCoffeeStoresState] = useState('');
+  const [fetchedCoffeeStoresError, setFetchedCoffeeStoresError] =
+    useState(null);
+
   const fetchCoffeeStoresFromLatLong = async () => {
     if (latLong) {
       try {
         const fetchedCoffeeStores = await fetchCoffeeStores(latLong, 30);
         console.log({ fetchedCoffeeStores });
+        setFetchedCoffeeStoresState(fetchedCoffeeStores);
       } catch (err) {
-        console.log(err);
+        console.log({ err });
+        setFetchedCoffeeStoresError(err.message);
       }
     }
   };
@@ -57,12 +65,16 @@ export default function Home({ coffeeStores }) {
 
       <main className={styles.main}>
         <Banner
-          buttonText={isFindingLocation ? 'Loading...' : 'View stores nearby'}
+          buttonText={isFindingLocation ? 'Locating' : 'View stores near me'}
           handleOnClick={() => handleOnBannerBtnClick()}
         />
 
         {locationErrorMsg && (
           <span>Something went wrong: {locationErrorMsg}</span>
+        )}
+
+        {fetchedCoffeeStoresError && (
+          <span>Something went wrong: {fetchedCoffeeStoresError}</span>
         )}
 
         <div className={styles.heroImage}>
@@ -73,6 +85,25 @@ export default function Home({ coffeeStores }) {
             height={400}
           />
         </div>
+
+        {fetchedCoffeeStoresState.length > 0 && (
+          <div className={styles.sectionWrapper}>
+            <h2 className={styles.heading2}>Stores Near Me</h2>
+            <div className={styles.cardLayout}>
+              {fetchedCoffeeStoresState.map((coffeeStore) => {
+                return (
+                  <Card
+                    name={coffeeStore.name}
+                    imgUrl={coffeeStore.imgUrl || '/static/hero-image.png'}
+                    href={`/coffee-store/${coffeeStore.id}`}
+                    className={styles.card}
+                    key={coffeeStore.id}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {coffeeStores.length > 0 && (
           <div className={styles.sectionWrapper}>
