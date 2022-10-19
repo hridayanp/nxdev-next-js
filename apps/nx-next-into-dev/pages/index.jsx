@@ -24,11 +24,7 @@ export default function Home(props) {
 
   const { dispatch, state } = useContext(StoreContext);
 
-  console.log({ state });
-
   const { coffeeStores, latLong } = state;
-
-  console.log({ isFindingLocation });
 
   // const [fetchedCoffeeStoresState, setFetchedCoffeeStoresState] = useState('');
   const [fetchedCoffeeStoresError, setFetchedCoffeeStoresError] =
@@ -63,11 +59,6 @@ export default function Home(props) {
     handleTrackLocation();
     // fetchCoffeeStoresFromLatLong();
   };
-
-  console.log({
-    latlong: latLong,
-    errorMsg: locationErrorMsg,
-  });
 
   return (
     <div className={styles.container}>
